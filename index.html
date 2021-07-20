@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        html,
+        body {
+            background: url(Images/tile.jpg) no-repeat center fixed;
+            background-size: cover;
+        }
+
+        h1 {
+            text-align: center;
+            font-style: italic;
+            font-variant: small-caps;
+            font-family: 'Brush Script MT', cursive;
+            color: black;
+            font-weight: bold;
+            align-content: center;
+        }
+
+        .card {
+            background: url(Images/notebg.png) no-repeat;
+            background-size: cover;
+            width: 250px;
+            position: relative;
+            min-width: 0;
+            overflow: auto;
+            transition: .3s
+        }
+
+        .card-body {
+            flex: 1 1 auto;
+            padding: 1rem 1rem;
+        }
+
+        .MyHidenDiv {
+            visibility: hidden;
+        }
+
+        .card-body:hover>.MyHidenDiv {
+            visibility: visible;
+        }
+
+        .card-footer {
+            padding: 0.5rem 1rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-top: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .card-text {
+            height: 190px;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .card-text p {
+            word-break: break-word;
+        }
+
+        ::-webkit-scrollbar {
+            width: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #d6dee1;
+            border-radius: 20px;
+            border: 6px solid transparent;
+            background-clip: content-box;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="tile">
+        <h1>My Task Board</h1>
+    </div>
+    <div align="center">
+        <iframe src="form.html" width="400" height="210">
+        </iframe>
+    </div><br>
+    <div class="row" id="Display"> </div>
+
+    <script src="ItemClass.JS"> </script>
+    <script>
+
+        let Tasks = new ItemCollection()
+        // task = ID: TaskUniqueID++, Desc: TaskDetails.value,Date: DueDate.value Time: DueTime.value 
+        //receives task object (see upper row for details), and add it to class Tasks, send to function which prints to screen
+        function AddTask(task) {
+            let MyTask = new MyItem(task.ID, '', task.Desc, task.Date, task.Time)
+            console.log(MyTask)
+            Tasks.AddItem(MyTask)
+            console.log(Tasks)
+            PrintToScreen()
+        }
+
+        //receives task id, and remove it from class Tasks, send to function which prints to screen
+        function DeleteTask(id) {
+            Tasks.DeleteItem(id)
+            console.log(Tasks)
+            PrintToScreen()
+        }
+        //responsible to print Tasks class which holds an array of notes, print it as cards 
+        function PrintToScreen() {
+            Display.innerHTML = ''
+            Tasks.items.forEach(note => {
+                Display.innerHTML += `<div class="col sm-4 py-2 " id= 'animateDiv${note.Id}'>
+            <div class="card" >
+                <div class="card-body">
+                    <!-- remove glyphicon , should be hidden till hovering a card --> 
+                    <div class="MyHidenDiv"> 
+                    <p ><span class="glyphicon glyphicon-remove-circle" onclick="DeleteTask(${note.Id})" style="margin: 20px;float: right"> </span></p>
+                    </div>
+                <p class="card-text">${note.Description}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="card-text" id="DueDate">${note.DueDate}</small><br>
+                    <small class="card-text" id="DueTime">${note.DueTime}</small>
+                </div>
+            </div>`
+            })
+            //adding fadein animation only to first card
+            document.getElementById(`animateDiv${Tasks.items[0].Id}`).classList.add('w3-animate-opacity')
+        }
+
+    </script>
+</body>
+
+</html>

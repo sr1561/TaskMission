@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            background: url(Images/formbg.jpg);
+            background-size: cover;
+            background-repeat: repeat;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- input fields for Note -->
+    <label for="TaskDetails">Describe Tssk</label>
+    <textarea class="form-control" id="TaskDetails" rows="2"></textarea><br>
+    <label for="DueD">Due Date</label> <label style="float: right;" for="DueT">Due Time</label><br>
+    <input type="date" id="DueDate" name="DueD" value="">
+    <input type="time" id="DueTime" name="DueT" style="float: right;" value=""><br><br>
+    <div class="flex-container ">
+        <button class="btn btn-success" onclick="ProcessInput()">Save</button> &nbsp;
+        <button class="btn btn-danger" onclick="cleanInput()">Clean</button>
+    </div>
+    <script>
+        // unique ID to easily find, and handle , currently delete is supported, easily later add update
+        TaskUniqueID = 1
+        
+        //this function handles data validation for the input inserted by client
+        function ProcessInput() {
+            //no value was entered
+        if (TaskDetails.value =='') {
+            PrintMsg('Task description must have input')
+            return
+        }
+        //description is too long
+        if (TaskDetails.value.length > 1500)
+        {
+            PrintMsg('Task description is too long')
+            return
+        }
+        // confirm date is in future
+        var dates = {
+            convert: function (d) {
+                // Converts the date in d to a date-object. The input can be:
+                //   a date object: returned without modification
+                //  an array      : Interpreted as [year,month,day]. NOTE: month is 0-11.
+                //   a number     : Interpreted as number of milliseconds
+                //                  since 1 Jan 1970 (a timestamp) 
+                //   a string     : Any format supported by the javascript engine, like
+                //                  "YYYY/MM/DD", "MM/DD/YYYY", "Jan 31 2009" etc.
+                //  an object     : Interpreted as an object with year, month and date
+                //                  attributes.  **NOTE** month is 0-11.
+                return (
+                    d.constructor === Date ? d :
+                        d.constructor === Array ? new Date(d[0], d[1], d[2]) :
+                            d.constructor === Number ? new Date(d) :
+                                d.constructor === String ? new Date(d) :
+                                    typeof d === "object" ? new Date(d.year, d.month, d.date) :
+                                        NaN
+                );
+            },
+            compare: function (a, b) {
+                // Compare two dates (could be of any type supported by the convert
+                // function above) and returns:
+                //  -1 : if a < b
+                //   0 : if a = b
+                //   1 : if a > b
+                // NaN : if a or b is an illegal date
+                // NOTE: The code inside isFinite does an assignment (=).
+                return (
+                    isFinite(a = this.convert(a).valueOf()) &&
+                        isFinite(b = this.convert(b).valueOf()) ?
+                        (a > b) - (a < b) :
+                        NaN
+                );
+            }
+        }
+        if (DueDate.value =='')
+        {
+            PrintMsg('Date must have value')
+            return
+        }
+        let dueDate = dates.convert(DueDate.value)
+        let today=dates.convert(new Date())
+        
+        if(dates.compare(dueDate,today)<1)
+        {
+            PrintMsg('date should be in future')
+            return
+        }
+        //no time was enetered
+        if (DueTime.value =='')
+        {
+            PrintMsg('Time must have value')
+            return
+        }
+         
+        let task = {
+            ID: TaskUniqueID++,
+            Desc: TaskDetails.value,
+            Date: DueDate.value,
+            Time: DueTime.value
+        }
+        //call main window to handle adding task
+        parent.AddTask(task)
+        }
+        //provide feedback to customer 
+        function PrintMsg(msg) {
+            alert(msg)
+        }
+        //supports Clean button to clear all input fields 
+        function cleanInput(){
+            TaskDetails.value=''
+            DueDate.value=''
+            DueTime.value=''
+        }
+    </script>
+</body>
+
+</html>
